@@ -88,6 +88,23 @@ var Carousel = React.createClass({
       }
     })
 
+    // Pagination
+    var currentIndex = this.state.currentIndex;
+    var pagination = React.createElement('div', {
+        className: 'carousel-pagination'
+      }, this.props.children.map(function (item, i) {
+        var activePager = ''
+        if(currentIndex === i) {
+          console.log('active pager', currentIndex)
+          activePager = 'active';
+        }
+        console.log('pagination', this);
+        return React.createElement('div', {
+          key: 'pager'+i,
+          className: 'page-item '+activePager
+        })
+      }));
+
     var swipeContainer = Swipeable({
       onSwipingRight: this.prevImageScroll,
       onSwipingLeft: this.nextImageScroll,
@@ -110,7 +127,7 @@ var Carousel = React.createClass({
         overflow: 'hidden',
         width: '100%'
       }
-    }), swipeContainer)
+    }), swipeContainer, pagination))
   }
 })
 
