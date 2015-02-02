@@ -95,10 +95,8 @@ var Carousel = React.createClass({
       }, this.props.children.map(function (item, i) {
         var activePager = ''
         if(currentIndex === i) {
-          console.log('active pager', currentIndex)
           activePager = 'active';
         }
-        console.log('pagination', this);
         return React.createElement('div', {
           key: 'pager'+i,
           className: 'page-item '+activePager
