@@ -60,6 +60,9 @@ var Carousel = React.createClass({
       currentIndex: index,
       delta: 0
     })
+    
+    // Execute callback on change current
+    if (this.props.onChangeCurrent) this.props.onChangeCurrent(index);
   },
 
   prevImageScroll: function (e, delta) {
