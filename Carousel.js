@@ -84,6 +84,7 @@ var Carousel = React.createClass({
     var transition = 'all 250ms ease-out'
 
     var clear = React.createElement('div', {
+      key: 'carousel-clear',
       style: {
         height: 0,
         visibility: 'hidden',
@@ -112,7 +113,7 @@ var Carousel = React.createClass({
       onSwiped: this.doMoveImage,
       ref: 'carouselContainer',
       style: {
-        '-webkit-transform': 'translate3d(' + delta + 'px, 0, 0)',
+        webkitTransform: 'translate3d(' + delta + 'px, 0, 0)',
         transition: this.state.delta === 0 ? transition : 'none',
         width: this.state.containerWidth + 'px'
       }
