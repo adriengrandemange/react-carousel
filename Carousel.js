@@ -7,7 +7,7 @@ var Carousel = React.createClass({
   getInitialState: function () {
     return {
       prevIndex: 0,
-      currentIndex: 0,
+      currentIndex: this.props.current|0,
       itemWidths: Array(this.props.children.length),
       itemStart: Array(this.props.children.length),
       containerWidth: 0,
