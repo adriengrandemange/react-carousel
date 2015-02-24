@@ -79,7 +79,7 @@ var Carousel = React.createClass({
 
   render: function () {
     var delta = this.state.delta +
-      (0 - this.state.itemStart[this.state.currentIndex])
+      (0 - (this.state.itemStart[this.state.currentIndex] || 0))
 
     var transition = 'all 250ms ease-out'
 
@@ -115,7 +115,7 @@ var Carousel = React.createClass({
       style: {
         webkitTransform: 'translate3d(' + delta + 'px, 0, 0)',
         transition: this.state.delta === 0 ? transition : 'none',
-        width: this.state.containerWidth + 'px'
+        width: (this.state.containerWidth || 100000) + 'px'
       }
     }, this.props.children.map(function (item, i) {
       return React.createElement('div', {
@@ -127,7 +127,8 @@ var Carousel = React.createClass({
     return React.createElement('div', assign({}, this.props, {
       style: {
         overflow: 'hidden',
-        width: '100%'
+        width: '100%',
+        visibility: this.state.containerWidth ? 'visible' : 'hidden'
       }
     }), swipeContainer, pagination);
   }
