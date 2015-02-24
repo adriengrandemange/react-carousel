@@ -79,7 +79,7 @@ var Carousel = React.createClass({
 
   render: function () {
     var delta = this.state.delta +
-      (0 - (this.state.itemStart[this.state.currentIndex] || 0))
+      (0 - this.state.itemStart[this.state.currentIndex]);
 
     var transition = 'all 250ms ease-out'
 
@@ -107,6 +107,10 @@ var Carousel = React.createClass({
         })
       }));
 
+    var containerWidth = "100000px";
+    if (this.state.containerWidth)
+      containerWidth = this.state.containerWidth + "px";
+    
     var swipeContainer = Swipeable({
       onSwipingRight: this.prevImageScroll,
       onSwipingLeft: this.nextImageScroll,
@@ -115,7 +119,7 @@ var Carousel = React.createClass({
       style: {
         webkitTransform: 'translate3d(' + delta + 'px, 0, 0)',
         transition: this.state.delta === 0 ? transition : 'none',
-        width: (this.state.containerWidth || 100000) + 'px'
+        width: containerWidth
       }
     }, this.props.children.map(function (item, i) {
       return React.createElement('div', {
@@ -127,8 +131,7 @@ var Carousel = React.createClass({
     return React.createElement('div', assign({}, this.props, {
       style: {
         overflow: 'hidden',
-        width: '100%',
-        visibility: this.state.containerWidth ? 'visible' : 'hidden'
+        width: '100%'
       }
     }), swipeContainer, pagination);
   }
