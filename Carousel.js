@@ -293,7 +293,7 @@ var Carousel = React.createClass({
 		}, this.props.children.map(function (item, i) {
 		  return React.createElement('div', {
 			key: i,
-			style: { float: 'left', background: "green" }
+			style: { float: 'left' }
 		  }, item)
 		}).concat(clear))
 		
