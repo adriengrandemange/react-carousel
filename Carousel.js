@@ -7,51 +7,50 @@ var Carousel = React.createClass({
 	
 	_element: null,
 	_proxy: null,
-	_maxScale:3,
-	_scrollFactor:0.02,
-	_transitionSpeed: 500,
-	_pinchable: false,
 	
-	getInitialState: function () {
-	return {
-	  prevIndex: 0,
-	  currentIndex: this.props.current|0,
-	  itemWidths: Array(this.props.children.length),
-	  itemStart: Array(this.props.children.length),
-	  containerWidth: 0,
-	  delta: 0
-	}
-	},
+  getInitialState: function () {
+    return {
+      prevIndex: 0,
+      currentIndex: this.props.current|0,
+      itemWidths: Array(this.props.children.length),
+      itemStart: Array(this.props.children.length),
+      containerWidth: 0,
+      delta: 0
+    }
+  },
 
-	componentDidMount: function () {
-	var widths = Array.prototype.map.call(
-	  this.refs.carouselContainer.getDOMNode().children,
-	  function (node) {
-		return node.offsetWidth
-	  }
-	)
+  componentDidMount: function () {
+    var widths = Array.prototype.map.call(
+      this.refs.carouselContainer.getDOMNode().children,
+      function (node) {
+        return node.offsetWidth
+      }
+    )
 
-	var totalWidth = widths.reduce(function (a, b) { return a + b }, 0)
-	var startPos = widths.reduce(function (total, width) {
-	  total.push(total[total.length - 1] + width)
-	  return total
-	}, [0])
+    var totalWidth = widths.reduce(function (a, b) { return a + b }, 0)
+    var startPos = widths.reduce(function (total, width) {
+      total.push(total[total.length - 1] + width)
+      return total
+    }, [0])
 
-	this.setState({
-	  itemWidths: widths,
-	  itemStart: startPos,
-	  containerWidth: totalWidth
-	})
-	},
+    this.setState({
+      itemWidths: widths,
+      itemStart: startPos,
+      containerWidth: totalWidth
+    })
+  },
 
-	addResistance: function (delta) {
-	return delta * (1 - parseInt(Math.sqrt(Math.pow(delta, 2)), 10) / 1000)
-	},
+  addResistance: function (delta) {
+    return delta * (1 - parseInt(Math.sqrt(Math.pow(delta, 2)), 10) / 1000)
+  },
 
+  
 	doMoveImage: function (_, x) {
 	  
 	if( this._isZoomed() == true )
 		return;  
+	  //
+	//this._clearZoom();
 	  
     var index = this.state.currentIndex
     var imageMoveIndex = this.state.currentIndex
@@ -78,15 +77,15 @@ var Carousel = React.createClass({
   },
 
 	prevImageScroll: function (e, delta) {
-		if( this._isZoomed() == true && this._proxy.left == false )
+	  
+		if( this._isZoomed() == true)
 		{
-			this._proxy.x -= delta * this._scrollFactor;
+			this._proxy.x -= delta * 0.02;
+			this._proxy.x = ( this._proxy.x > 100 ) ? 100 : this._proxy.x;
 			this._proxy.x = ( this._proxy.x < 0 ) ? 0 : this._proxy.x;
 			this._renderZoomedElement();
 		}
-		else
-		{
-			this._clearZoom();
+		else{
 			this.setState({
 			  delta: this.addResistance(delta)
 			})
@@ -95,10 +94,12 @@ var Carousel = React.createClass({
 
 	nextImageScroll: function (e, delta) {
 	  
-		if( this._isZoomed() == true && this._proxy.right == false )
+		if( this._isZoomed() == true)
 		{
-			this._proxy.x += delta * this._scrollFactor;
+			this._proxy.x += delta * 0.02;
 			this._proxy.x = ( this._proxy.x > 100 ) ? 100 : this._proxy.x;
+			this._proxy.x = ( this._proxy.x < 0 ) ? 0 : this._proxy.x;
+			
 			this._renderZoomedElement();
 		}
 		else
@@ -114,27 +115,26 @@ var Carousel = React.createClass({
 		if( this._isZoomed() == false )
 			return
 		
-		this._proxy.y += ( delta * this._scrollFactor );
+		this._proxy.y += ( delta * 0.05 );
 		this._proxy.y = ( this._proxy.y > 100 ) ? 100 : this._proxy.y;
 		this._proxy.y = ( this._proxy.y < 0 ) ? 0 : this._proxy.y;
 		this._renderZoomedElement();
 	},
 
 	upScroll: function(e, delta){
-		
 		if( this._isZoomed() == false )
 		{
 			return
 		}
 		
-		this._proxy.y -= ( delta * this._scrollFactor );
+		this._proxy.y -= ( delta * 0.05 );
 		this._proxy.y = ( this._proxy.y > 100 ) ? 100 : this._proxy.y;
 		this._proxy.y = ( this._proxy.y < 0 ) ? 0 : this._proxy.y;
 		this._renderZoomedElement();
 	},
 
 	_isZoomed:function() {
-		return( this._element != null && this._proxy.zoom > 1 );
+		return( this._element != null && this._proxy.zoom > 1);
 	},
   
 	_clearZoom:function(e){
@@ -155,15 +155,12 @@ var Carousel = React.createClass({
 			var proxy = this._proxy;
 			this._element.style.transform = "scale("+proxy.zoom+","+proxy.zoom+")";
 			this._element.style.transformOrigin = proxy.x+"% "+proxy.y+"%";
-			this._element.style.transition = "all "+this._transitionSpeed+"ms ease-out";
+			this._element.style.transition = "all 250ms ease-out";
 		}
 	},
 
 	touchStart: function (e) {
-		
-		this._pinchable = ( this.props.pinchable == undefined ) ?  this._pinchable : ( this.props.pinchable == true );
-		
-		if( e.targetTouches.length > 1 && this._pinchable == true)
+		if( e.targetTouches.length > 1 )
 		{
 			var xa = e.targetTouches[0].clientX;
 			var ya = e.targetTouches[0].clientY;
@@ -172,17 +169,13 @@ var Carousel = React.createClass({
 			var dist = Math.sqrt((xb-xa) * (xb-xa)	+ (yb-ya) * (yb-ya) );
 			
 			this._element = e.target;
-			this._proxy = this._proxy || { originDist:0, zoom: 1, originZoom: 1, x:50, y:50, left: false, right: false};
+			this._proxy = this._proxy || { originDist:0, zoom: 1, originZoom: 1, x:50, y:50};
 			this._proxy.originDist = dist;
-			
-			this._transitionSpeed 	= this.props.transitionSpeed 	||  this._transitionSpeed;
-			this._maxScale 			= this.props.maxScale 			||  this._maxScale;
-			this._scrollFactor 		= this.props.scrollFactor 		||  this._scrollFactor;
 		}
 	},
 
 	touchMove: function (e) {
-		if( e.targetTouches.length > 1 && this._element != null && this._pinchable == true  )
+		if( e.targetTouches.length > 1 && this._element != null  )
 		{
 			var proxy = this._proxy;
 			var xa = e.targetTouches[0].clientX;
@@ -196,29 +189,13 @@ var Carousel = React.createClass({
 				return;
 			
 			proxy.zoom = proxy.originZoom * factor;
-			proxy.zoom = ( proxy.zoom > this._maxScale ) ? this._maxScale : ( proxy.zoom < 1 ) ? 1 : proxy.zoom;
+			proxy.zoom = ( proxy.zoom > 3 ) ? 3 : ( proxy.zoom < 1 ) ? 1 : proxy.zoom;
 			
 			this._renderZoomedElement();
 		}
 	},
 
-	touchEnd: function (e) {
-		if( this._isZoomed() == true )
-		{
-			this._proxy.right = false;
-			this._proxy.left = false;
-				
-			if( this._proxy.x >= 100 )
-			{
-				this._proxy.right = true;
-			}
-			
-			if( this._proxy.x <= 0 )
-			{
-				this._proxy.left = true;
-			}
-		}
-	},
+	touchEnd: function (e) {},
 
 	render: function () {
 		
@@ -268,7 +245,7 @@ var Carousel = React.createClass({
 		}, this.props.children.map(function (item, i) {
 		  return React.createElement('div', {
 			key: i,
-			style: { float: 'left' }
+			style: { float: 'left', background: "green" }
 		  }, item)
 		}).concat(clear))
 		
@@ -285,8 +262,9 @@ var Carousel = React.createClass({
 		  
 		}), swipeContainer, pagination);
 	}
+}
+)
 
-})
 
 
 
