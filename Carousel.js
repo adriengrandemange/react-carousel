@@ -43,6 +43,10 @@ var Carousel = React.createClass({
   doMoveImage: function (_, x) {
     var index = this.state.currentIndex
     var imageMoveIndex = this.state.currentIndex
+
+    if (this.props.canSwipe && this.props.canSwipe(index, x) == false)
+      return;
+
     if (x < 0) {
       if (index > 0) {
         index = index - 1
@@ -66,12 +70,16 @@ var Carousel = React.createClass({
   },
 
   prevImageScroll: function (e, delta) {
+    if (this.props.canSwipe && this.props.canSwipe(this.state.currentIndex, -1) == false)
+      return;
     this.setState({
       delta: this.addResistance(delta)
     })
   },
 
   nextImageScroll: function (e, delta) {
+    if (this.props.canSwipe && this.props.canSwipe(this.state.currentIndex, 1) == false)
+      return;
     this.setState({
       delta: 0 - this.addResistance(delta)
     })
